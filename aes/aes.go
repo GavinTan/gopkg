@@ -28,6 +28,9 @@ func PKCS7Padding(ciphertext []byte) []byte {
 func PKCS7UnPadding(origData []byte) []byte {
 	length := len(origData)
 	unpadding := int(origData[length-1])
+	if length < unpadding || length == 0 {
+		return origData
+	}
 	return origData[:(length - unpadding)]
 }
 
