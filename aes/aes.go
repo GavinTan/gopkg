@@ -73,7 +73,7 @@ func AesDecrypt(text, key string) (string, error) {
 	}
 	newText, _ := base64.StdEncoding.DecodeString(text)
 	if len(newText)%block.BlockSize() != 0 {
-		return "", errors.New("无效的解密字符串")
+		return "", errors.New("invalid decrypted text")
 	}
 
 	blockMode := cipher.NewCBCDecrypter(block, newKey[:16])
