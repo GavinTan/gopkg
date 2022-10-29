@@ -9,7 +9,7 @@ import (
 	"errors"
 )
 
-// Sha256Key sha256 加密
+// sha256 加密
 func Sha256Key(key string) []byte {
 	h := sha256.New()
 	h.Write([]byte(key))
@@ -17,7 +17,7 @@ func Sha256Key(key string) []byte {
 	return newKey
 }
 
-// PKCS7Padding 填充数据
+// 进行 PKCS7 填充
 func PKCS7Padding(src []byte) []byte {
 	bs := aes.BlockSize
 	length := len(src)
@@ -34,7 +34,7 @@ func PKCS7Padding(src []byte) []byte {
 	return append(src, paddingText...)
 }
 
-// PKCS7UnPadding 放出数据
+// 移除 PKCS7 填充
 func PKCS7UnPadding(src []byte) []byte {
 	length := len(src)
 	if length == 0 {
@@ -48,7 +48,7 @@ func PKCS7UnPadding(src []byte) []byte {
 	return src[:(length - unpadding)]
 }
 
-// AesEncrypt 加密
+// 加密
 func AesEncrypt(src, key string) (string, error) {
 	newKey := Sha256Key(key)
 	block, err := aes.NewCipher(newKey)
@@ -63,7 +63,7 @@ func AesEncrypt(src, key string) (string, error) {
 	return base64.StdEncoding.EncodeToString(crypted), nil
 }
 
-// AesDecrypt 解密
+// 解密
 func AesDecrypt(crypted, key string) (string, error) {
 	newKey := Sha256Key(key)
 	block, err := aes.NewCipher(newKey)
