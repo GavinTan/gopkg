@@ -49,35 +49,36 @@ func PKCS7UnPadding(src []byte) []byte {
 }
 
 // 加密
-func AesEncrypt(src, key string) (string, error) {
+func AesEncrypt(text, key string) (string, error) {
 	newKey := Sha256Key(key)
 	block, err := aes.NewCipher(newKey)
 	if err != nil {
 		return "", err
 	}
-	newsrc := []byte(src)
-	newsrc = PKCS7Padding(newsrc)
+
+	newText := []byte(text)
+	newText = PKCS7Padding(newText)
 	blockMode := cipher.NewCBCEncrypter(block, newKey[:16])
-	crypted := make([]byte, len(newsrc))
-	blockMode.CryptBlocks(crypted, newsrc)
-	return base64.StdEncoding.EncodeToString(crypted), nil
+	cryptText := make([]byte, len(newText))
+	blockMode.CryptBlocks(cryptText, newText)
+	return base64.StdEncoding.EncodeToString(cryptText), nil
 }
 
 // 解密
-func AesDecrypt(crypted, key string) (string, error) {
+func AesDecrypt(text, key string) (string, error) {
 	newKey := Sha256Key(key)
 	block, err := aes.NewCipher(newKey)
 	if err != nil {
 		return "", err
 	}
-	newCrypted, _ := base64.StdEncoding.DecodeString(crypted)
-	if len(newCrypted)%block.BlockSize() != 0 {
+	newText, _ := base64.StdEncoding.DecodeString(text)
+	if len(newText)%block.BlockSize() != 0 {
 		return "", errors.New("无效的解密字符串")
 	}
 
 	blockMode := cipher.NewCBCDecrypter(block, newKey[:16])
-	src := make([]byte, len(newCrypted))
-	blockMode.CryptBlocks(src, newCrypted)
-	src = PKCS7UnPadding(src)
-	return string(src), nil
+	plainText := make([]byte, len(newText))
+	blockMode.CryptBlocks(plainText, newText)
+	plainText = PKCS7UnPadding(plainText)
+	return string(plainText), nil
 }
